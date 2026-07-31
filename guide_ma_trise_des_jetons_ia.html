@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maîtriser ses jetons : Le guide ultime de l'IA</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Configuration for Dark Mode & Theme Colors -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & Lucide Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.4);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+        
+        /* Accordion transition animations */
+        .accordion-content {
+            transition: max-height 0.35s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        .accordion-content.open {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col">
+
+    <!-- Reading Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-1.5 bg-slate-200 dark:bg-slate-800 z-50">
+        <div id="scrollProgress" class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 w-0 transition-all duration-150 ease-out"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header class="sticky top-1.5 z-40 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-indigo-600 rounded-xl text-white shadow-lg shadow-indigo-500/30">
+                    <i data-lucide="zap" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-none tracking-tight">TokenMaster <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 font-semibold ml-1">v2.4 Pro</span></h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Guide d'optimisation LLM & Contextes</p>
+                </div>
+            </div>
+
+            <!-- Header Right Controls -->
+            <div class="flex items-center gap-3">
+                <!-- Progress Tracker Badge -->
+                <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-medium border border-slate-200 dark:border-slate-700">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>
+                    <span>Progression : <strong id="progressText" class="text-indigo-600 dark:text-indigo-400">0/15</strong></span>
+                </div>
+
+                <!-- Dark Mode Toggle Button -->
+                <button id="themeToggle" aria-label="Basculer le thème" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    <i id="themeIconSun" data-lucide="sun" class="w-5 h-5 hidden"></i>
+                    <i id="themeIconMoon" data-lucide="moon" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900 via-slate-900 to-slate-950 text-white p-6 sm:p-10 shadow-2xl border border-indigo-500/20">
+            <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 max-w-3xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-4">
+                    <i data-lucide="shield-alert" class="w-4 h-4 text-indigo-400"></i> Anti-Gaspillage de Tokens
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight text-white mb-4">
+                    Maîtriser ses jetons : Le guide ultime pour ne plus jamais atteindre vos limites d'IA.
+                </h2>
+                <p class="text-slate-300 text-base sm:text-lg leading-relaxed mb-6">
+                    Ne laissez plus l'accumulation de contexte ralentir votre workflow et faire exploser votre facturation. Adoptez les meilleures pratiques d'ingénierie de contexte.
+                </p>
+
+                <!-- Explanation Box: The Core Problem -->
+                <div class="p-5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 text-slate-200 text-sm sm:text-base leading-relaxed flex gap-4 items-start">
+                    <div class="p-2 bg-amber-500/20 rounded-lg text-amber-400 shrink-0 mt-0.5">
+                        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white mb-1">Le problème du "Contexte Réutilisé"</h3>
+                        <p class="text-slate-300 text-sm">
+                            À chaque nouveau message envoyé dans une discussion, l'historique <strong>complet</strong> de la conversation est réexpédié à l'IA. Si vous échangez 20 messages, le message #1 aura été facturé 20 fois ! La consommation ne grandit pas de façon linéaire, mais <span class="text-amber-300 font-semibold underline">exponentielle</span>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Simulator Widget -->
+        <section class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h3 class="text-lg font-bold flex items-center gap-2">
+                        <i data-lucide="calculator" class="w-5 h-5 text-indigo-500"></i>
+                        Simulateur d'accumulation d'historique
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Visualisez la différence entre un chat non-optimisé et l'application des bonnes pratiques.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <label for="turnsSlider" class="text-xs font-semibold text-slate-600 dark:text-slate-300">Nombre de messages : <span id="turnsValue" class="text-indigo-600 dark:text-indigo-400 font-bold">10</span></label>
+                    <input type="range" id="turnsSlider" min="2" max="30" value="10" class="w-32 accent-indigo-600 cursor-pointer">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+                    <div class="text-xs font-medium text-slate-500 mb-1">Sans optimisation (Accumulation)</div>
+                    <div id="tokensRaw" class="text-2xl font-extrabold text-rose-500">27 500 jetons</div>
+                    <div class="text-xs text-slate-400 mt-1">Historique complet réenvoyé sans filtre</div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50">
+                    <div class="text-xs font-medium text-indigo-600 dark:text-indigo-300 mb-1">Avec optimisation (Guide)</div>
+                    <div id="tokensOptimized" class="text-2xl font-extrabold text-emerald-500">3 200 jetons</div>
+                    <div class="text-xs text-slate-400 mt-1">Recommencement, cadrage et compaction</div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex flex-col justify-center">
+                    <div class="text-xs font-medium text-emerald-600 dark:text-emerald-400 mb-1">Économie directe</div>
+                    <div id="tokenSavedPercent" class="text-3xl font-black text-emerald-600 dark:text-emerald-400">-88%</div>
+                    <div class="text-xs text-emerald-700 dark:text-emerald-300 font-medium mt-1">Évite le gaspillage de crédits API & latence</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Controls & Filters Section -->
+        <section class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <!-- Search Bar -->
+            <div class="relative w-full sm:w-80">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" placeholder="Rechercher une règle, un terme..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+            </div>
+
+            <!-- Level Filter Buttons -->
+            <div class="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-none">
+                <button data-filter="all" class="filter-btn active px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-sm transition-all whitespace-nowrap">
+                    Tous (15)
+                </button>
+                <button data-filter="lvl1" class="filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all whitespace-nowrap">
+                    Niveau 1 (Manuel)
+                </button>
+                <button data-filter="lvl2" class="filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all whitespace-nowrap">
+                    Niveau 2 (Auto)
+                </button>
+                <button data-filter="lvl3" class="filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all whitespace-nowrap">
+                    Niveau 3 (Ringer)
+                </button>
+            </div>
+
+            <!-- Global Expand / Collapse -->
+            <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                <button id="expandAllBtn" class="px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1">
+                    <i data-lucide="chevrons-down" class="w-4 h-4"></i> Tout ouvrir
+                </button>
+                <button id="collapseAllBtn" class="px-3 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center gap-1">
+                    <i data-lucide="chevrons-up" class="w-4 h-4"></i> Tout fermer
+                </button>
+            </div>
+        </section>
+
+        <!-- Content Accordions Container -->
+        <div class="space-y-8">
+
+            <!-- LEVEL 1 SECTION -->
+            <section class="level-group space-y-4" data-level="lvl1">
+                <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm">
+                        N1
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Niveau 1 : Nettoyer son bureau</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Les bonnes habitudes manuelles du quotidien</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- Rule 1 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="1">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0">Règle 01</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Éditez vos erreurs</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="hidden md:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Économie directe</span>
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p class="mb-3">
+                                Si vous faites une faute de frappe ou posez une mauvaise question, <strong>utilisez le bouton d'édition du message d'origine</strong> au lieu de corriger l'IA dans un nouveau message.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-700 dark:text-slate-300">
+                                <strong class="text-rose-500 font-sans block mb-1">❌ À éviter :</strong>
+                                User: "Rédige un mail pour mon client Dupont." <br>
+                                IA: [Génère un long mail...]<br>
+                                User: "Ah pardon je voulais dire le client Martin et en anglais." <br>
+                                <strong class="text-emerald-500 font-sans block mt-2 mb-1">✅ Bonne pratique :</strong>
+                                Cliquez sur [Modifier/Edit] sur le premier message et remplacez directement le texte. L'IA effacera la branche inutile et repartira sur un historique propre.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rule 2 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="2">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0">Règle 02</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Regroupez et cadrez vos questions</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="hidden md:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">-40% Latence</span>
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p class="mb-3">
+                                Posez plusieurs questions ensemble et indiquez à l'avance le format exact de la réponse (ex. : <em>"150 mots max"</em>, <em>"en 5 puces"</em>, <em>"en JSON strict"</em>) pour éviter toute ambiguïté et les échanges d'aller-retour superflus.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-700 dark:text-slate-300">
+                                <span class="text-indigo-500 font-bold block mb-1">Exemple de Prompt Cadré :</span>
+                                "Agis en expert SEO. Analyse le texte suivant et fournis : 1) Un titre H1 (max 60 car.), 2) Une meta-description (max 150 car.), 3) 3 mots-clés clés. Format de réponse : JSON uniquement."
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rule 3 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="3">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0">Règle 03</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Démarrez de nouvelles tâches (Reset)</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="hidden md:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Essentiel</span>
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Les longues conversations transportent des centaines de milliers de jetons inutiles. Ouvrez systématiquement une nouvelle discussion dès que le sujet de votre travail change ou qu'une étape est franchie.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rule 4 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="4">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0">Règle 04</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Ne transportez que les résultats</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Dans un processus à plusieurs étapes, ne donnez à l'IA dans la nouvelle session que le rapport finalisé de l'étape précédente, en excluant les brouillons, les hésitations, les arguments secondaires ou les sources rejetées.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rule 5 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="5">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0">Règle 05</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Exigez des réponses courtes</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="hidden md:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">Double Impact</span>
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Une réponse verbouse et trop longue vous coûte <strong>deux fois</strong> : une première fois lors de sa génération (tokens de sortie), puis à nouveau lorsqu'elle est réintégrée comme contexte dans vos requêtes suivantes (tokens d'entrée).
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rule 6 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="6">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0">Règle 06</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Cherchez l'information vous-même</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Ne forcez pas le modèle à lire l'intégralité d'un document de 50 pages pour trouver une seule statistique. Utilisez <kbd class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-mono">Ctrl+F</kbd> ou un outil de recherche locale, et n'envoyez à l'IA que le paragraphe pertinent.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rule 7 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="7">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0">Règle 07</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Allégez vos formats de source</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="hidden md:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Gain de 70%</span>
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Convertissez les fichiers lourds comme les PDF complexes, fichiers DOCX enrichis ou HTML bruts remplis de balises en <strong>texte brut (.txt)</strong> ou en <strong>Markdown (.md)</strong> avant d'envoyer votre prompt. Vous supprimerez les métadonnées inutiles.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rule 8 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="8">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 shrink-0">Règle 08</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Sauvegardez vos connaissances</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Utilisez une base de connaissances centralisée (ex. : OpenBrain, Notion, Obsidian) pour stocker les informations récurrentes ou les consignes projets, afin d'éviter à l'IA de devoir re-calculer ou re-chercher ces données à chaque session.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LEVEL 2 SECTION -->
+            <section class="level-group space-y-4" data-level="lvl2">
+                <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-sm">
+                        N2
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Niveau 2 : Engager un assistant</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Automatisation et gestion intelligente d'outils</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- Rule 9 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="9">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 shrink-0">Règle 09</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Installez la compétence Token Saver</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="hidden md:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">Automatique</span>
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Cet outil automatisé recherche les informations précises au sein de gros fichiers, n'envoie que les passages strictement nécessaires et empêche les relances inutiles, le tout sans altérer vos habitudes d'écriture.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rule 10 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="10">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 shrink-0">Règle 10</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Limitez les outils connectés</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="hidden md:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">Piège Fréquent</span>
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Les schémas et descriptions d'outils (plugins/tools) branchés à votre IA (comme Slack, GitHub, Jira ou bases SQL) consomment souvent des <strong>dizaines de milliers de jetons système</strong> avant même que l'IA ne réalise la première action. Activez uniquement les outils nécessaires à la tâche.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rule 11 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="11">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 shrink-0">Règle 11</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Gérez le contexte des longues tâches</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Pour les travaux complexes ne pouvant être redémarrés de zéro, utilisez des techniques de <strong>compaction de contexte</strong> ou l'édition manuelle de l'historique pour purger les anciens retours d'outils verbeux et alléger le fil de discussion.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rule 12 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="12">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 shrink-0">Règle 12</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Choisissez le modèle le plus adapté ("Le plus bête suffit")</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="hidden md:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Coût / 10</span>
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Ne sollicitez pas les modèles de raisonnement ultra-lourds (ex. Claude Opus, GPT-4o, o1) pour des tâches basiques de formatage ou de correction de texte. Optez pour le modèle le plus simple et rapide capable de réaliser votre tâche correctement (ex. Haiku, Flash, Mini).
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rule 13 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="13">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 shrink-0">Règle 13</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Utilisez la mise en cache (Prompt Caching)</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="hidden md:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">API Pro</span>
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Si vous utilisez des API pour des tâches répétitives avec de gros System Prompts ou de la documentation statique, activez le <strong>Prompt Caching</strong>. Cette fonctionnalité évite au fournisseur LLM d'analyser l'intégralité du message à chaque nouvelle requête, divisant les coûts de 50 à 90%.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LEVEL 3 SECTION -->
+            <section class="level-group space-y-4" data-level="lvl3">
+                <div class="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+                        N3
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Niveau 3 : Filtrer à la source</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Contrôle avancé avec l'architecture Ringer</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- Rule 14 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="14">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 shrink-0">Règle 14</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Imposez des limites strictes avec un intermédiaire (Ringer)</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="hidden md:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Proxy Local</span>
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Le framework <strong>Ringer</strong> s'installe localement sous forme de middleware / proxy entre votre client et les API LLM. Il intercepte les requêtes en temps réel et bloque automatiquement les paquets volumineux dépassant un seuil de jetons prédéfini avant qu'ils ne soient expédiés sur le réseau.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Rule 15 -->
+                    <div class="rule-card bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-700" data-rule-id="15">
+                        <button class="accordion-header w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 focus:outline-none">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <input type="checkbox" class="rule-checkbox w-5 h-5 rounded text-indigo-600 border-slate-300 dark:border-slate-700 dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 shrink-0">Règle 15</span>
+                                <h4 class="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base truncate">Répondez sans modèle (Short-circuit Ringer)</h4>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="hidden md:inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">0 Jeton Consommé</span>
+                                <i data-lucide="chevron-down" class="chevron-icon w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </button>
+                        <div class="accordion-content px-4 sm:px-5 pb-5 text-slate-600 dark:text-slate-300 text-sm leading-relaxed border-t border-slate-100 dark:border-slate-800/60 pt-4">
+                            <p>
+                                Ringer permet de court-circuiter totalement l'IA pour les requêtes standardisées. Il intercepte les questions récurrentes et renvoie directement des réponses déjà validées pré-enregistrées dans votre base de données locale, <strong>réduisant la consommation de jetons à zéro</strong> pour ces requêtes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="mt-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
+            <p>Guide d'Ingénierie de Contexte IA - Optimisation de Token & Coûts LLM</p>
+            <p class="text-slate-400 dark:text-slate-500">Conçu pour maximiser l'efficacité de vos échanges avec les modèles de langage.</p>
+        </div>
+    </footer>
+
+    <!-- Interactive JavaScript Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Lucide Icons
+            lucide.createIcons();
+
+            // --- Theme Toggle Logic ---
+            const themeToggleBtn = document.getElementById('themeToggle');
+            const sunIcon = document.getElementById('themeIconSun');
+            const moonIcon = document.getElementById('themeIconMoon');
+
+            function applyTheme(isDark) {
+                if (isDark) {
+                    document.documentElement.classList.add('dark');
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                }
+            }
+
+            // Detect user system preference or local storage
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const initialDark = savedTheme ? savedTheme === 'dark' : systemPrefersDark;
+            applyTheme(initialDark);
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isCurrentDark = document.documentElement.classList.contains('dark');
+                const newDark = !isCurrentDark;
+                localStorage.setItem('theme', newDark ? 'dark' : 'light');
+                applyTheme(newDark);
+            });
+
+            // --- Reading Scroll Progress Bar ---
+            const scrollProgress = document.getElementById('scrollProgress');
+            window.addEventListener('scroll', () => {
+                const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const progress = totalHeight > 0 ? (window.scrollY / totalHeight) * 100 : 0;
+                scrollProgress.style.width = `${progress}%`;
+            });
+
+            // --- Accordion Logic ---
+            const ruleCards = document.querySelectorAll('.rule-card');
+
+            function toggleAccordion(card, forceOpen = null) {
+                const content = card.querySelector('.accordion-content');
+                const chevron = card.querySelector('.chevron-icon');
+                const isOpen = content.classList.contains('open');
+                const shouldOpen = forceOpen !== null ? forceOpen : !isOpen;
+
+                if (shouldOpen) {
+                    content.classList.add('open');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    if (chevron) chevron.style.transform = 'rotate(180deg)';
+                } else {
+                    content.classList.remove('open');
+                    content.style.maxHeight = '0px';
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                }
+            }
+
+            ruleCards.forEach(card => {
+                const header = card.querySelector('.accordion-header');
+                header.addEventListener('click', () => toggleAccordion(card));
+            });
+
+            // --- Expand / Collapse All Controls ---
+            document.getElementById('expandAllBtn').addEventListener('click', () => {
+                ruleCards.forEach(card => {
+                    if (card.style.display !== 'none') {
+                        toggleAccordion(card, true);
+                    }
+                });
+            });
+
+            document.getElementById('collapseAllBtn').addEventListener('click', () => {
+                ruleCards.forEach(card => toggleAccordion(card, false));
+            });
+
+            // --- Filtering & Search Logic ---
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const levelGroups = document.querySelectorAll('.level-group');
+            const searchInput = document.getElementById('searchInput');
+
+            function applyFilters() {
+                const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+                const query = searchInput.value.toLowerCase().trim();
+
+                levelGroups.forEach(group => {
+                    const level = group.dataset.level;
+                    const matchesLevel = (activeFilter === 'all' || activeFilter === level);
+                    let visibleInGroup = 0;
+
+                    const cards = group.querySelectorAll('.rule-card');
+                    cards.forEach(card => {
+                        const title = card.querySelector('h4').textContent.toLowerCase();
+                        const bodyText = card.querySelector('.accordion-content').textContent.toLowerCase();
+                        const matchesSearch = title.includes(query) || bodyText.includes(query);
+
+                        if (matchesLevel && matchesSearch) {
+                            card.style.display = 'block';
+                            visibleInGroup++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    group.style.display = visibleInGroup > 0 ? 'block' : 'none';
+                });
+            }
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-indigo-600', 'text-white');
+                        b.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300');
+                    });
+                    btn.classList.add('active', 'bg-indigo-600', 'text-white');
+                    btn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300');
+                    applyFilters();
+                });
+            });
+
+            searchInput.addEventListener('input', applyFilters);
+
+            // --- Completion Tracking & LocalStorage ---
+            const checkboxes = document.querySelectorAll('.rule-checkbox');
+            const progressText = document.getElementById('progressText');
+
+            function updateProgress() {
+                const total = checkboxes.length;
+                let checkedCount = 0;
+                const state = {};
+
+                checkboxes.forEach(cb => {
+                    const card = cb.closest('.rule-card');
+                    const ruleId = card.dataset.ruleId;
+                    state[ruleId] = cb.checked;
+                    if (cb.checked) checkedCount++;
+                });
+
+                progressText.textContent = `${checkedCount}/${total}`;
+                localStorage.setItem('tokenMasterProgress', JSON.stringify(state));
+            }
+
+            // Restore saved progress
+            const savedProgress = JSON.parse(localStorage.getItem('tokenMasterProgress') || '{}');
+            checkboxes.forEach(cb => {
+                const card = cb.closest('.rule-card');
+                const ruleId = card.dataset.ruleId;
+                if (savedProgress[ruleId]) {
+                    cb.checked = true;
+                }
+                cb.addEventListener('change', updateProgress);
+            });
+            updateProgress();
+
+            // --- Interactive Simulator Logic ---
+            const turnsSlider = document.getElementById('turnsSlider');
+            const turnsValue = document.getElementById('turnsValue');
+            const tokensRaw = document.getElementById('tokensRaw');
+            const tokensOptimized = document.getElementById('tokensOptimized');
+            const tokenSavedPercent = document.getElementById('tokenSavedPercent');
+
+            function calculateSimulator() {
+                const turns = parseInt(turnsSlider.value, 10);
+                turnsValue.textContent = turns;
+
+                // Formula: Turn N sends sum of all previous turns + response. Average msg size = 500 tokens
+                // Unoptimized: sum_{i=1}^turns (i * 500) = 500 * (turns * (turns + 1)) / 2
+                const rawTokens = 500 * (turns * (turns + 1)) / 2;
+                
+                // Optimized: resetting/framing/caching keeps each prompt compact (avg 300 to 400 per turn total)
+                const optimizedTokens = turns * 350;
+
+                const savedPct = Math.round(((rawTokens - optimizedTokens) / rawTokens) * 100);
+
+                tokensRaw.textContent = `${rawTokens.toLocaleString('fr-FR')} jetons`;
+                tokensOptimized.textContent = `${optimizedTokens.toLocaleString('fr-FR')} jetons`;
+                tokenSavedPercent.textContent = `-${savedPct}%`;
+            }
+
+            turnsSlider.addEventListener('input', calculateSimulator);
+            calculateSimulator();
+        });
+    </script>
+</body>
+</html>
